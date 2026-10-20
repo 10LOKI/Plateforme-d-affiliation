@@ -1,0 +1,3 @@
+create table profile_profiles (id bigselrial primary key , email varchar not null unique ,status varchar not null , created_at timestamp not null );
+create table profile_publishers (profile_id BIGINT primary key references profile_profiles(id) on DELETE cascade , first_name varchar not null , last_name varchar not null , niche varchar not null , bio TEXT , country varchar not null);
+create table profile_advertisers (profile_id BIGINT primary key references profile_profiles(id) on delete cascade , company_name varchar not null, sector varchar not null , website varchar not null );
