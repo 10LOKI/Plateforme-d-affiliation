@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Publisher extends Profi    le {
+public class Publisher extends Profile {
 
     @Column(nullable = false)
     private String firstName;
