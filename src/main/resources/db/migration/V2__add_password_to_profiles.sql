@@ -1,0 +1,1 @@
+ALTER TABLE profile_profiles ADD COLUMN password VARCHAR(255) NOT NULL;
