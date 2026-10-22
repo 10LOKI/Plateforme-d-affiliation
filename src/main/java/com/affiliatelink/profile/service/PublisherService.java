@@ -26,6 +26,8 @@ public class PublisherService
         publisher.setCountry(request.country());
         publisher.setFirstName(request.firstName());
         publisher.setLastName(request.lastName());
+        publisher.setEmail(request.email());
+        publisher.setNiche(request.niche());
         return PublisherRegistrationResponse.from(pr.save(publisher));
     }
 
