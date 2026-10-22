@@ -1,4 +1,4 @@
-package ma.youcode.demo;
+package com.affiliatelink;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;

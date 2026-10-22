@@ -1,10 +1,11 @@
-package com.affiliate.profile.entity;
+package com.affiliatelink.profile.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.time.LocalDate.Time;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "profile_profiles")
