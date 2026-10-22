@@ -5,6 +5,7 @@ import com.affiliatelink.profile.dto.PublisherRegistrationRequest;
 import com.affiliatelink.profile.dto.PublisherRegistrationResponse;
 import com.affiliatelink.profile.entity.Publisher;
 import com.affiliatelink.profile.repository.PublisherRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,9 +15,11 @@ import java.util.List;
 public class PublisherService
 {
     private final PublisherRepository pr;
+    private final PasswordEncoder passwordEncoder;
 
-    public PublisherService(PublisherRepository pr) {
+    public PublisherService(PublisherRepository pr, PasswordEncoder passwordEncoder) {
         this.pr = pr;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public PublisherRegistrationResponse create(PublisherRegistrationRequest request)
@@ -28,6 +31,7 @@ public class PublisherService
         publisher.setLastName(request.lastName());
         publisher.setEmail(request.email());
         publisher.setNiche(request.niche());
+        publisher.setPassword(passwordEncoder.encode(request.password()));
         return PublisherRegistrationResponse.from(pr.save(publisher));
     }
 
