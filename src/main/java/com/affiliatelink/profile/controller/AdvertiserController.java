@@ -4,6 +4,8 @@ import com.affiliatelink.profile.dto.AdvertiserRegistrationRequest;
 import com.affiliatelink.profile.dto.AdvertiserRegistrationResponse;
 import com.affiliatelink.profile.service.AdvertiserService;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,5 +26,10 @@ public class AdvertiserController {
     @ResponseStatus(HttpStatus.CREATED)
     public AdvertiserRegistrationResponse create(@Valid @RequestBody AdvertiserRegistrationRequest request) {
         return advertiserService.create(request);
+    }
+
+    @GetMapping("/{id}")
+    public AdvertiserRegistrationResponse getById(@PathVariable Long id) {
+        return advertiserService.getById(id);
     }
 }

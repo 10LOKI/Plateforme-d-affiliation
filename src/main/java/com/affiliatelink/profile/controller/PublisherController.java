@@ -32,5 +32,9 @@ public class PublisherController
     {
         return pservice.getAll();
     }
-}
 
+    @GetMapping("/{id}")
+    public PublisherRegistrationResponse getById(@PathVariable Long id) {
+        return pservice.getById(id);
+    }
+}

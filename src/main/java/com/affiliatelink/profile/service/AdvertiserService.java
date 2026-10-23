@@ -1,5 +1,7 @@
 package com.affiliatelink.profile.service;
 
+import com.affiliatelink.common.ProfileNotFoundException;
+
 import com.affiliatelink.profile.dto.AdvertiserRegistrationRequest;
 import com.affiliatelink.profile.dto.AdvertiserRegistrationResponse;
 import com.affiliatelink.profile.entity.Advertiser;
@@ -25,5 +27,11 @@ public class AdvertiserService {
         advertiser.setSector(request.sector());
         advertiser.setWebsite(request.website());
         return AdvertiserRegistrationResponse.from(advertiserRepository.save(advertiser));
+    }
+
+    public AdvertiserRegistrationResponse getById(Long id) {
+        Advertiser profile = advertiserRepository.findById(id)
+                .orElseThrow(() -> new ProfileNotFoundException(id));
+        return AdvertiserRegistrationResponse.from(profile);
     }
 }

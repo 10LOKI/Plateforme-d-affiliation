@@ -1,5 +1,7 @@
 package com.affiliatelink.profile.service;
 
+import com.affiliatelink.common.ProfileNotFoundException;
+
 
 import com.affiliatelink.profile.dto.PublisherRegistrationRequest;
 import com.affiliatelink.profile.dto.PublisherRegistrationResponse;
@@ -38,5 +40,11 @@ public class PublisherService
     public List<PublisherRegistrationResponse> getAll()
     {
         return pr.findAll().stream().map(PublisherRegistrationResponse::from).toList();
+    }
+
+    public PublisherRegistrationResponse getById(Long id) {
+        Publisher profile = pr.findById(id)
+                .orElseThrow(() -> new ProfileNotFoundException(id));
+        return PublisherRegistrationResponse.from(profile);
     }
 }
