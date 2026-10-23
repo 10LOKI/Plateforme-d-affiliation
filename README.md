@@ -10,14 +10,13 @@ API Spring Boot pour créer et consulter les publishers et advertisers, puis gé
 
 ## Lancement local (Windows)
 
-La configuration actuelle désactive le démarrage automatique de Docker Compose par Spring Boot. Démarrer PostgreSQL avant l’application :
+Avec Docker Desktop ouvert, Spring Boot démarre PostgreSQL automatiquement via Docker Compose :
 
 ```powershell
-docker compose up -d
 .\mvnw.cmd spring-boot:run
 ```
 
-Dans IntelliJ, lancer `com.affiliatelink.DemoApplication` après le démarrage de PostgreSQL.
+Dans IntelliJ, lancer com.affiliatelink.DemoApplication avec le dossier du projet comme répertoire de travail.
 
 - API : `http://localhost:8080`.
 - PostgreSQL : port local `5433`, base `affiliatelink_db`.
@@ -124,9 +123,9 @@ Spring Modulith est prévu au brief suivant.
 
 ProfileStatusTest vérifie les neuf combinaisons de statuts. La commande package exécute les tests et produit `target/demo-0.0.1-SNAPSHOT.war`.
 
-## Point restant du brief
+## Docker Compose
 
-Le démarrage automatique de PostgreSQL par Spring Boot reste à activer et vérifier : `spring.docker.compose.enabled` est actuellement `false`. Les fonctionnalités HTTP ont été vérifiées séparément ; cela ne valide pas cette exigence de démarrage automatique.
+Le démarrage automatique est activé avec spring.docker.compose.enabled: true. Spring Boot utilise docker-compose.yml ; Docker Desktop doit être ouvert. Si PostgreSQL tourne déjà, il est réutilisé. Les données restent dans le volume Docker. Le port API habituel reste 8080.
 
 ### Format des erreurs de saisie
 
