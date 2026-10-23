@@ -1,7 +1,7 @@
 spring:
   docker:
     compose:
-      enabled: false
+      enabled: true
   datasource:
     url: jdbc:postgresql://localhost:5433/affiliatelink_db
     username: postgres
