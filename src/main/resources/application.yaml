@@ -1,3 +1,17 @@
 spring:
-  application:
-    name: demo
+  docker:
+    compose:
+      enabled: false
+  datasource:
+    url: jdbc:postgresql://localhost:5433/affiliatelink_db
+    username: postgres
+    password: password
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
