@@ -50,9 +50,8 @@ public abstract class Profile
 
     private boolean isValidTransition(ProfileStatus current, ProfileStatus target) {
         return switch (current) {
-            case PENDING -> target == ProfileStatus.ACTIVE;
+            case PENDING, SUSPENDED -> target == ProfileStatus.ACTIVE;
             case ACTIVE -> target == ProfileStatus.SUSPENDED;
-            case SUSPENDED -> target == ProfileStatus.ACTIVE;
         };
     }
 }
