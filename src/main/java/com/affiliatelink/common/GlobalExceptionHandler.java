@@ -12,6 +12,12 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(InvalidProfileStatusException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleInvalidStatus(InvalidProfileStatusException exception) {
+        return Map.of("message", exception.getMessage());
+    }
+
     @ExceptionHandler(ProfileNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleProfileNotFound(ProfileNotFoundException exception) {

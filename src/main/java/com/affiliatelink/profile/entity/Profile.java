@@ -1,6 +1,7 @@
 package com.affiliatelink.profile.entity;
 
 import jakarta.persistence.*;
+import com.affiliatelink.common.InvalidProfileStatusException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,7 +43,7 @@ public abstract class Profile
 
     public void changeStatus(ProfileStatus newStatus) {
         if (!isValidTransition(this.status, newStatus)) {
-            throw new IllegalStateException("Transition de statut interdite de " + this.status + " vers " + newStatus);
+            throw new InvalidProfileStatusException("Transition de statut interdite de " + this.status + " vers " + newStatus);
         }
         this.status = newStatus;
     }
