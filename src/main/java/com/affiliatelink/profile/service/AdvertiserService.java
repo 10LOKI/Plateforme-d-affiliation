@@ -1,6 +1,7 @@
 package com.affiliatelink.profile.service;
 
 import com.affiliatelink.common.ProfileNotFoundException;
+import java.util.List;
 
 import com.affiliatelink.profile.dto.AdvertiserRegistrationRequest;
 import com.affiliatelink.profile.dto.AdvertiserRegistrationResponse;
@@ -33,5 +34,10 @@ public class AdvertiserService {
         Advertiser profile = advertiserRepository.findById(id)
                 .orElseThrow(() -> new ProfileNotFoundException(id));
         return AdvertiserRegistrationResponse.from(profile);
+    }
+
+    public List<AdvertiserRegistrationResponse> getAll() {
+        return advertiserRepository.findAll().stream()
+                .map(AdvertiserRegistrationResponse::from).toList();
     }
 }
