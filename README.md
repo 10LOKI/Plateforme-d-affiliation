@@ -127,3 +127,13 @@ ProfileStatusTest vérifie les neuf combinaisons de statuts. La commande package
 ## Point restant du brief
 
 Le démarrage automatique de PostgreSQL par Spring Boot reste à activer et vérifier : `spring.docker.compose.enabled` est actuellement `false`. Les fonctionnalités HTTP ont été vérifiées séparément ; cela ne valide pas cette exigence de démarrage automatique.
+
+### Format des erreurs de saisie
+
+Les erreurs de validation sont centralisées dans GlobalExceptionHandler et renvoient 400 avec les champs concernés :
+
+```json
+{"email":"Format d'email invalide"}
+```
+
+Un JSON incorrect, un corps manquant ou une valeur enum inconnue renvoie 400 avec un message JSON. Les valeurs saisies, notamment le mot de passe, ne sont pas reprises dans la réponse. Les erreurs métier restent en 404 (profil absent) ou 409 (email dupliqué ou transition interdite).
