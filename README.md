@@ -121,7 +121,7 @@ Spring Modulith est prévu au brief suivant.
 .\mvnw.cmd package
 ```
 
-ProfileStatusTest vérifie les neuf combinaisons de statuts. La commande package exécute les tests et produit `target/demo-0.0.1-SNAPSHOT.war`.
+ProfileStatusTest vérifie les neuf combinaisons de statuts. La commande package exécute les tests et produit `target/demo-0.0.1-SNAPSHOT.jar`.
 
 ## Docker Compose
 
@@ -136,3 +136,9 @@ Les erreurs de validation sont centralisées dans GlobalExceptionHandler et renv
 ```
 
 Un JSON incorrect, un corps manquant ou une valeur enum inconnue renvoie 400 avec un message JSON. Les valeurs saisies, notamment le mot de passe, ne sont pas reprises dans la réponse. Les erreurs métier restent en 404 (profil absent) ou 409 (email dupliqué ou transition interdite).
+
+Pour lancer le JAR depuis le dossier du projet, avec Docker Desktop ouvert :
+
+```powershell
+java -jar target/demo-0.0.1-SNAPSHOT.jar
+```
