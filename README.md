@@ -155,3 +155,22 @@ Les contrôleurs, DTO HTTP, services, repositories et entités se trouvent sous 
 Le futur module offer utilisera ProfileApi et écoutera ProfileSuspended après commit. Le registre persistant JPA et son listener seront ajoutés à ce checkpoint ultérieur ; la publication actuelle seule ne garantit pas une livraison persistante.
 
 Vérification : `./mvnw.cmd clean test`. Le test `ModularityTest` exécute `ApplicationModules.of(DemoApplication.class).verify()`. Les tests HTTP sans base vérifient les sept routes et des réponses 400/404/409 ; ils ne remplacent pas une recette avec PostgreSQL dans Apidog.
+
+## Module Offer — modèle de données
+
+Le checkpoint de domaine ajoute `Offre`, `Campaign` et `Tag` sous `offer.internal.entity`, leurs repositories et la migration `V3__create_offer_schema.sql`.
+
+- Une offre possède plusieurs campagnes ; Campaign porte la clé étrangère `offre_id`.
+- Les tags sont partagés entre offres via `offer_offre_tags`, avec un nom normalisé et unique.
+- `advertiserId` est un identifiant simple : aucune relation JPA ni clé étrangère vers les tables profile.
+- Montants : BigDecimal / NUMERIC(19,4). Dates de campagne : LocalDate. Statuts et modèles de rémunération : enums enregistrés en texte.
+- `niche` est un texte propre au module offer ; aucune dépendance vers l’enum interne du module profile.
+- Les règles de transitions et les endpoints offer seront ajoutés aux checkpoints suivants.
+
+Les tests ordinaires se lancent avec `.\mvnw.cmd test`. Pour vérifier aussi la persistance, démarrer PostgreSQL avec Docker Desktop ouvert et `docker compose up -d postgres`, puis lancer :
+
+```powershell
+.\mvnw.cmd test '-Dtest=OfferPersistenceIT'
+```
+
+Ce test charge le contexte, applique les migrations, relit les relations depuis PostgreSQL et vérifie l’unicité des tags. Ses données d’essai sont annulées en fin de transaction ; les migrations de schéma restent appliquées.
