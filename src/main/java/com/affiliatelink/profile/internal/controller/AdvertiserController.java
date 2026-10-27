@@ -1,8 +1,8 @@
-package com.affiliatelink.profile.controller;
+package com.affiliatelink.profile.internal.controller;
 
-import com.affiliatelink.profile.dto.AdvertiserRegistrationRequest;
-import com.affiliatelink.profile.dto.AdvertiserRegistrationResponse;
-import com.affiliatelink.profile.service.AdvertiserService;
+import com.affiliatelink.profile.internal.dto.AdvertiserRegistrationRequest;
+import com.affiliatelink.profile.internal.dto.AdvertiserRegistrationResponse;
+import com.affiliatelink.profile.internal.service.AdvertiserService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;

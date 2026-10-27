@@ -1,4 +1,4 @@
-package com.affiliatelink.profile.entity;
+package com.affiliatelink.profile.internal.entity;
 
 import jakarta.persistence.*;
 import com.affiliatelink.common.InvalidProfileStatusException;

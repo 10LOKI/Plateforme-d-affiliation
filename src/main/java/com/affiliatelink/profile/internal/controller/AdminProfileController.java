@@ -1,7 +1,7 @@
-package com.affiliatelink.profile.controller;
+package com.affiliatelink.profile.internal.controller;
 
-import com.affiliatelink.profile.dto.ProfileStatusRequest;
-import com.affiliatelink.profile.service.ProfileService;
+import com.affiliatelink.profile.internal.dto.ProfileStatusRequest;
+import com.affiliatelink.profile.internal.service.ProfileService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PatchMapping;

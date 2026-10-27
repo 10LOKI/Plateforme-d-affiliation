@@ -1,7 +1,7 @@
-package com.affiliatelink.profile.dto;
+package com.affiliatelink.profile.internal.dto;
 
-import com.affiliatelink.profile.entity.Advertiser;
-import com.affiliatelink.profile.entity.ProfileStatus;
+import com.affiliatelink.profile.internal.entity.Advertiser;
+import com.affiliatelink.profile.internal.entity.ProfileStatus;
 
 public record AdvertiserRegistrationResponse(
         Long id, String email, String companyName, String sector,

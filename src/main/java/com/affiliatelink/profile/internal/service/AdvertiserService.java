@@ -1,12 +1,12 @@
-package com.affiliatelink.profile.service;
+package com.affiliatelink.profile.internal.service;
 
 import com.affiliatelink.common.ProfileNotFoundException;
 import java.util.List;
 
-import com.affiliatelink.profile.dto.AdvertiserRegistrationRequest;
-import com.affiliatelink.profile.dto.AdvertiserRegistrationResponse;
-import com.affiliatelink.profile.entity.Advertiser;
-import com.affiliatelink.profile.repository.AdvertiserRepository;
+import com.affiliatelink.profile.internal.dto.AdvertiserRegistrationRequest;
+import com.affiliatelink.profile.internal.dto.AdvertiserRegistrationResponse;
+import com.affiliatelink.profile.internal.entity.Advertiser;
+import com.affiliatelink.profile.internal.repository.AdvertiserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

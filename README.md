@@ -142,3 +142,16 @@ Pour lancer le JAR depuis le dossier du projet, avec Docker Desktop ouvert :
 ```powershell
 java -jar target/demo-0.0.1-SNAPSHOT.jar
 ```
+
+## Architecture modulaire
+
+Spring Modulith 2.1.1 vérifie les frontières des modules. Le module `profile` expose uniquement les types publics de son package racine :
+
+- `ProfileApi` : `advertiserExists(id)` et `isAdvertiserActive(id)` ; un identifiant absent renvoie false, un profil publisher ne compte pas comme advertiser.
+- `ProfileSuspended(profileId)` : événement publié lors d’une transition autorisée vers SUSPENDED, dans la transaction de changement de statut.
+
+Les contrôleurs, DTO HTTP, services, repositories et entités se trouvent sous `profile.internal`. Les autres modules ne doivent pas les importer. `common` est un module ouvert pour les erreurs communes. L’API Java intermodules est différente des endpoints HTTP : aucun endpoint supplémentaire n’est ajouté.
+
+Le futur module offer utilisera ProfileApi et écoutera ProfileSuspended après commit. Le registre persistant JPA et son listener seront ajoutés à ce checkpoint ultérieur ; la publication actuelle seule ne garantit pas une livraison persistante.
+
+Vérification : `./mvnw.cmd clean test`. Le test `ModularityTest` exécute `ApplicationModules.of(DemoApplication.class).verify()`. Les tests HTTP sans base vérifient les sept routes et des réponses 400/404/409 ; ils ne remplacent pas une recette avec PostgreSQL dans Apidog.
