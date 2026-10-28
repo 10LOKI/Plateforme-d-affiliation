@@ -66,4 +66,11 @@ public class Offre {
         tags.add(tag);
         tag.getOffres().add(this);
     }
+
+    public void clearTags() {
+        for (Tag tag : tags) {
+            tag.getOffres().remove(this);
+        }
+        tags.clear();
+    }
 }

@@ -2,6 +2,7 @@ package com.affiliatelink.offer.internal.controller;
 
 import com.affiliatelink.offer.internal.dto.OffreCreateRequest;
 import com.affiliatelink.offer.internal.dto.OffreResponse;
+import com.affiliatelink.offer.internal.dto.OffreUpdateRequest;
 import com.affiliatelink.offer.internal.service.OffreService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,5 +21,10 @@ public class OffreController {
     @ResponseStatus(HttpStatus.CREATED)
     public OffreResponse create(@Valid @RequestBody OffreCreateRequest request) {
         return offreService.create(request);
+    }
+
+    @PutMapping("/{id}")
+    public OffreResponse update(@PathVariable Long id, @Valid @RequestBody OffreUpdateRequest request) {
+        return offreService.update(id, request);
     }
 }

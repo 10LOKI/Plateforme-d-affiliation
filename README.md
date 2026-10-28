@@ -200,4 +200,24 @@ Pour tester automatiquement US1 avec PostgreSQL actif :
 .\mvnw.cmd test '-Dtest=OfferCreationIT'
 ```
 
-Les tests ordinaires et ModularityTest restent exécutables sans PostgreSQL. Les GET /api/offres et PUT ne sont pas encore implémentés à US1.
+Les tests ordinaires et ModularityTest restent exécutables sans PostgreSQL. Les GET /api/offres ne sont pas encore implémentés.
+
+## Modifier une offre — US2
+
+PUT `/api/offres/{id}` avec les champs complets modifiables :
+
+```json
+{
+  "title": "Formation Java avancee",
+  "description": "Formation mise a jour",
+  "landingUrl": "https://example.com/java-avance",
+  "niche": "TECH",
+  "tags": [" Java ", "java", "Backend"]
+}
+```
+
+Réponses : 200 avec l’offre modifiée, 400 pour saisie invalide, 404 pour offre absente. L’identifiant, advertiserId, createdAt et les campagnes sont préservés. Les associations de tags sont remplacées par le contenu fourni, normalisé et dédoublonné. Une liste vide, absente ou null retire les associations de cette offre ; les tags restent en base pour les autres offres. Envoyer [] explicitement pour demander de les retirer.
+
+MapStruct met à jour l’entité existante via @MappingTarget. La méthode de service est transactionnelle. Aucun contrôle d’identité de l’appelant n’est introduit dans ce contrat sans authentification.
+
+Test automatique avec PostgreSQL : `.\mvnw.cmd test '-Dtest=OfferUpdateIT'`.
