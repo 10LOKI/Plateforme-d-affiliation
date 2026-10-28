@@ -174,3 +174,30 @@ Les tests ordinaires se lancent avec `.\mvnw.cmd test`. Pour vérifier aussi la 
 ```
 
 Ce test charge le contexte, applique les migrations, relit les relations depuis PostgreSQL et vérifie l’unicité des tags. Ses données d’essai sont annulées en fin de transaction ; les migrations de schéma restent appliquées.
+
+## Créer une offre — US1
+
+POST `/api/offres`, Content-Type `application/json` :
+
+```json
+{
+  "advertiserId": 1,
+  "title": "Formation Java",
+  "description": "Formation Java pour débutants",
+  "landingUrl": "https://example.com/formation-java",
+  "niche": "TECH",
+  "tags": [" Java ", "java", "Formation"]
+}
+```
+
+Remplacer advertiserId par un annonceur existant ACTIVE. Réponses : 201 avec DTO de l’offre, id et createdAt ; 400 pour saisie invalide ; 404 si l’annonceur est absent ou si l’id correspond à un publisher ; 409 si l’annonceur est inactif. Une collision entre deux créations concurrentes du même tag renvoie aussi 409 et invite à réessayer.
+
+Les tags sont facultatifs ; absents, null ou [] donnent une collection vide. Les noms sont normalisés en minuscules et sans espaces en bordure ; un tag déjà présent est réutilisé. La réponse contient des objets tags `{ "id": ..., "name": "java" }`, pas les entités JPA. Le service est transactionnel et utilise ProfileApi. Les conversions DTO/entités sont générées par MapStruct. L’identifiant de l’annonceur est fourni dans le corps pour ce contrat pédagogique ; aucune authentification de l’appelant n’est ajoutée à ce checkpoint.
+
+Pour tester automatiquement US1 avec PostgreSQL actif :
+
+```powershell
+.\mvnw.cmd test '-Dtest=OfferCreationIT'
+```
+
+Les tests ordinaires et ModularityTest restent exécutables sans PostgreSQL. Les GET /api/offres et PUT ne sont pas encore implémentés à US1.
