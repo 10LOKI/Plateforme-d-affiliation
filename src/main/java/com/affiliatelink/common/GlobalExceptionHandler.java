@@ -15,6 +15,18 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(OffreNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleOffreNotFound(OffreNotFoundException exception) {
+        return Map.of("message", exception.getMessage());
+    }
+
+    @ExceptionHandler(InactiveAdvertiserException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleInactiveAdvertiser(InactiveAdvertiserException exception) {
+        return Map.of("message", exception.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidation(MethodArgumentNotValidException exception) {
@@ -47,6 +59,11 @@ public class GlobalExceptionHandler {
     public Map<String, String> handleDuplicateEmail(DataIntegrityViolationException exception) {
         Throwable cause = exception;
         while (cause != null) {
+            if (cause instanceof ConstraintViolationException violation
+                    && "23505".equals(violation.getSQLState())
+                    && "offer_tags_name_key".equals(violation.getConstraintName())) {
+                return Map.of("message", "Ce tag vient d’être créé par une autre requête. Réessayez.");
+            }
             if (cause instanceof ConstraintViolationException violation
                     && "23505".equals(violation.getSQLState())
                     && "profile_profiles_email_key".equals(violation.getConstraintName())) {

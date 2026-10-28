@@ -142,3 +142,82 @@ Pour lancer le JAR depuis le dossier du projet, avec Docker Desktop ouvert :
 ```powershell
 java -jar target/demo-0.0.1-SNAPSHOT.jar
 ```
+
+## Architecture modulaire
+
+Spring Modulith 2.1.1 vérifie les frontières des modules. Le module `profile` expose uniquement les types publics de son package racine :
+
+- `ProfileApi` : `advertiserExists(id)` et `isAdvertiserActive(id)` ; un identifiant absent renvoie false, un profil publisher ne compte pas comme advertiser.
+- `ProfileSuspended(profileId)` : événement publié lors d’une transition autorisée vers SUSPENDED, dans la transaction de changement de statut.
+
+Les contrôleurs, DTO HTTP, services, repositories et entités se trouvent sous `profile.internal`. Les autres modules ne doivent pas les importer. `common` est un module ouvert pour les erreurs communes. L’API Java intermodules est différente des endpoints HTTP : aucun endpoint supplémentaire n’est ajouté.
+
+Le futur module offer utilisera ProfileApi et écoutera ProfileSuspended après commit. Le registre persistant JPA et son listener seront ajoutés à ce checkpoint ultérieur ; la publication actuelle seule ne garantit pas une livraison persistante.
+
+Vérification : `./mvnw.cmd clean test`. Le test `ModularityTest` exécute `ApplicationModules.of(DemoApplication.class).verify()`. Les tests HTTP sans base vérifient les sept routes et des réponses 400/404/409 ; ils ne remplacent pas une recette avec PostgreSQL dans Apidog.
+
+## Module Offer — modèle de données
+
+Le checkpoint de domaine ajoute `Offre`, `Campaign` et `Tag` sous `offer.internal.entity`, leurs repositories et la migration `V3__create_offer_schema.sql`.
+
+- Une offre possède plusieurs campagnes ; Campaign porte la clé étrangère `offre_id`.
+- Les tags sont partagés entre offres via `offer_offre_tags`, avec un nom normalisé et unique.
+- `advertiserId` est un identifiant simple : aucune relation JPA ni clé étrangère vers les tables profile.
+- Montants : BigDecimal / NUMERIC(19,4). Dates de campagne : LocalDate. Statuts et modèles de rémunération : enums enregistrés en texte.
+- `niche` est un texte propre au module offer ; aucune dépendance vers l’enum interne du module profile.
+- Les règles de transitions et les endpoints offer seront ajoutés aux checkpoints suivants.
+
+Les tests ordinaires se lancent avec `.\mvnw.cmd test`. Pour vérifier aussi la persistance, démarrer PostgreSQL avec Docker Desktop ouvert et `docker compose up -d postgres`, puis lancer :
+
+```powershell
+.\mvnw.cmd test '-Dtest=OfferPersistenceIT'
+```
+
+Ce test charge le contexte, applique les migrations, relit les relations depuis PostgreSQL et vérifie l’unicité des tags. Ses données d’essai sont annulées en fin de transaction ; les migrations de schéma restent appliquées.
+
+## Créer une offre — US1
+
+POST `/api/offres`, Content-Type `application/json` :
+
+```json
+{
+  "advertiserId": 1,
+  "title": "Formation Java",
+  "description": "Formation Java pour débutants",
+  "landingUrl": "https://example.com/formation-java",
+  "niche": "TECH",
+  "tags": [" Java ", "java", "Formation"]
+}
+```
+
+Remplacer advertiserId par un annonceur existant ACTIVE. Réponses : 201 avec DTO de l’offre, id et createdAt ; 400 pour saisie invalide ; 404 si l’annonceur est absent ou si l’id correspond à un publisher ; 409 si l’annonceur est inactif. Une collision entre deux créations concurrentes du même tag renvoie aussi 409 et invite à réessayer.
+
+Les tags sont facultatifs ; absents, null ou [] donnent une collection vide. Les noms sont normalisés en minuscules et sans espaces en bordure ; un tag déjà présent est réutilisé. La réponse contient des objets tags `{ "id": ..., "name": "java" }`, pas les entités JPA. Le service est transactionnel et utilise ProfileApi. Les conversions DTO/entités sont générées par MapStruct. L’identifiant de l’annonceur est fourni dans le corps pour ce contrat pédagogique ; aucune authentification de l’appelant n’est ajoutée à ce checkpoint.
+
+Pour tester automatiquement US1 avec PostgreSQL actif :
+
+```powershell
+.\mvnw.cmd test '-Dtest=OfferCreationIT'
+```
+
+Les tests ordinaires et ModularityTest restent exécutables sans PostgreSQL. Les GET /api/offres ne sont pas encore implémentés.
+
+## Modifier une offre — US2
+
+PUT `/api/offres/{id}` avec les champs complets modifiables :
+
+```json
+{
+  "title": "Formation Java avancee",
+  "description": "Formation mise a jour",
+  "landingUrl": "https://example.com/java-avance",
+  "niche": "TECH",
+  "tags": [" Java ", "java", "Backend"]
+}
+```
+
+Réponses : 200 avec l’offre modifiée, 400 pour saisie invalide, 404 pour offre absente. L’identifiant, advertiserId, createdAt et les campagnes sont préservés. Les associations de tags sont remplacées par le contenu fourni, normalisé et dédoublonné. Une liste vide, absente ou null retire les associations de cette offre ; les tags restent en base pour les autres offres. Envoyer [] explicitement pour demander de les retirer.
+
+MapStruct met à jour l’entité existante via @MappingTarget. La méthode de service est transactionnelle. Aucun contrôle d’identité de l’appelant n’est introduit dans ce contrat sans authentification.
+
+Test automatique avec PostgreSQL : `.\mvnw.cmd test '-Dtest=OfferUpdateIT'`.
