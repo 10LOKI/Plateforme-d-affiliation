@@ -5,6 +5,7 @@ import com.affiliatelink.common.ProfileNotFoundException;
 import com.affiliatelink.common.OffreNotFoundException;
 import com.affiliatelink.common.InvalidOfferSearchException;
 import com.affiliatelink.offer.internal.dto.OffrePageResponse;
+import com.affiliatelink.offer.internal.dto.OffreDetailResponse;
 import com.affiliatelink.offer.internal.repository.OffreSpecifications;
 import com.affiliatelink.offer.internal.dto.OffreCreateRequest;
 import com.affiliatelink.offer.internal.dto.OffreUpdateRequest;
@@ -59,6 +60,13 @@ public class OffreService {
         offre.clearTags();
         addTags(offre, request.tags());
         return mapper.toResponse(offreRepository.saveAndFlush(offre));
+    }
+
+    @Transactional(readOnly = true)
+    public OffreDetailResponse getById(Long id) {
+        var offre = offreRepository.findById(id)
+                .orElseThrow(() -> new OffreNotFoundException(id));
+        return mapper.toDetailResponse(offre);
     }
 
     @Transactional(readOnly = true)

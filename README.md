@@ -200,7 +200,7 @@ Pour tester automatiquement US1 avec PostgreSQL actif :
 .\mvnw.cmd test '-Dtest=OfferCreationIT'
 ```
 
-Les tests ordinaires et ModularityTest restent exécutables sans PostgreSQL. La recherche GET /api/offres est disponible à US3 ; le détail GET /api/offres/{id} sera ajouté à US4.
+Les tests ordinaires et ModularityTest restent exécutables sans PostgreSQL. La recherche GET /api/offres est disponible à US3 et le détail GET /api/offres/{id} à US4.
 
 ## Modifier une offre — US2
 
@@ -233,3 +233,11 @@ Pagination : page commence à 0, défaut 0 ; size de 1 à 100, défaut 20. Tri :
 La réponse est un record avec `content` (liste de DTO OffreResponse), `page`, `size`, `totalElements` et `totalPages`. Les conversions d’entités et de page sont générées par MapStruct. La lecture se fait dans une transaction readOnly. Le repository combine les critères avec Specifications et effectue la pagination en base.
 
 Test automatique avec PostgreSQL : `.\mvnw.cmd test '-Dtest=OfferSearchIT'`.
+
+## Détail d’une offre — US4
+
+GET `/api/offres/{id}`, sans corps : 200 avec toutes les informations de l’offre, ses tags et `campaigns`. Chaque campagne expose id, name, startDate, endDate, budget, payoutModel, payoutValue et status. Une offre sans campagne renvoie `campaigns: []`. Une offre absente renvoie 404 avec message JSON.
+
+Le détail utilise OffreDetailResponse, distinct des réponses de création/modification/recherche. Les entités JPA ne sont pas exposées et CampaignResponse ne référence pas l’offre parente. MapStruct génère les conversions dans une transaction en lecture seule. Aucune nouvelle migration n’est nécessaire.
+
+Test automatique avec PostgreSQL : `.\mvnw.cmd test '-Dtest=OfferDetailsIT'`. La création de campagnes par HTTP reste prévue dans US5.

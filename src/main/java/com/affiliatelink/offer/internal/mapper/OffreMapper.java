@@ -2,6 +2,7 @@ package com.affiliatelink.offer.internal.mapper;
 
 import com.affiliatelink.offer.internal.dto.*;
 import com.affiliatelink.offer.internal.entity.Offre;
+import com.affiliatelink.offer.internal.entity.Campaign;
 import com.affiliatelink.offer.internal.entity.Tag;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -25,6 +26,10 @@ public interface OffreMapper {
     void update(OffreUpdateRequest request, @MappingTarget Offre offre);
 
     OffreResponse toResponse(Offre offre);
+
+    OffreDetailResponse toDetailResponse(Offre offre);
+
+    CampaignResponse toResponse(Campaign campaign);
 
     @Mapping(target = "page", source = "number")
     @Mapping(target = "content", source = "content", defaultExpression = "java(java.util.List.of())")
