@@ -200,7 +200,7 @@ Pour tester automatiquement US1 avec PostgreSQL actif :
 .\mvnw.cmd test '-Dtest=OfferCreationIT'
 ```
 
-Les tests ordinaires et ModularityTest restent exécutables sans PostgreSQL. Les GET /api/offres ne sont pas encore implémentés.
+Les tests ordinaires et ModularityTest restent exécutables sans PostgreSQL. La recherche GET /api/offres est disponible à US3 ; le détail GET /api/offres/{id} sera ajouté à US4.
 
 ## Modifier une offre — US2
 
@@ -221,3 +221,15 @@ Réponses : 200 avec l’offre modifiée, 400 pour saisie invalide, 404 pour off
 MapStruct met à jour l’entité existante via @MappingTarget. La méthode de service est transactionnelle. Aucun contrôle d’identité de l’appelant n’est introduit dans ce contrat sans authentification.
 
 Test automatique avec PostgreSQL : `.\mvnw.cmd test '-Dtest=OfferUpdateIT'`.
+
+## Recherche des offres — US3
+
+GET `/api/offres?niche=TECH&advertiserId=14&tag=java&keyword=Java&page=0&size=5&sort=title,asc`.
+
+Tous les filtres sont facultatifs et sont combinés avec ET. niche correspond exactement au texte stocké, sans espaces en bordure ; tag est normalisé en minuscules. keyword recherche une sous-chaîne dans le titre sans distinction de casse ; les caractères % et _ sont traités comme du texte, pas comme des jokers SQL. Les filtres texte vides sont ignorés. Un annonceur absent dans un filtre donne une page vide, pas une erreur 404.
+
+Pagination : page commence à 0, défaut 0 ; size de 1 à 100, défaut 20. Tri : un champ parmi id/title/createdAt/niche/advertiserId avec direction asc ou desc ; défaut id,asc. Un tri sans direction utilise asc. Un second tri id départage les valeurs égales. Une page au-delà du résultat renvoie 200 avec content vide. Pagination invalide, champ/direction de tri non autorisé ou advertiserId non positif : 400.
+
+La réponse est un record avec `content` (liste de DTO OffreResponse), `page`, `size`, `totalElements` et `totalPages`. Les conversions d’entités et de page sont générées par MapStruct. La lecture se fait dans une transaction readOnly. Le repository combine les critères avec Specifications et effectue la pagination en base.
+
+Test automatique avec PostgreSQL : `.\mvnw.cmd test '-Dtest=OfferSearchIT'`.

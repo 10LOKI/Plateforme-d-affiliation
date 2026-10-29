@@ -7,6 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
+import org.springframework.data.domain.Page;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface OffreMapper {
@@ -24,6 +25,10 @@ public interface OffreMapper {
     void update(OffreUpdateRequest request, @MappingTarget Offre offre);
 
     OffreResponse toResponse(Offre offre);
+
+    @Mapping(target = "page", source = "number")
+    @Mapping(target = "content", source = "content", defaultExpression = "java(java.util.List.of())")
+    OffrePageResponse toPageResponse(Page<OffreResponse> page);
 
     TagResponse toResponse(Tag tag);
 
