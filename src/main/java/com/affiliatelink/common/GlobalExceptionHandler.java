@@ -16,6 +16,12 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(CampaignOwnershipException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleCampaignOwnership(CampaignOwnershipException exception) {
+        return Map.of("message", exception.getMessage());
+    }
+
     @ExceptionHandler(InvalidOfferSearchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleInvalidOfferSearch(InvalidOfferSearchException exception) {

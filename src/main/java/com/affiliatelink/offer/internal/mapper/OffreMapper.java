@@ -31,6 +31,11 @@ public interface OffreMapper {
 
     CampaignResponse toResponse(Campaign campaign);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "offre", ignore = true)
+    @Mapping(target = "status", constant = "DRAFT")
+    Campaign toEntity(CampaignCreateRequest request);
+
     @Mapping(target = "page", source = "number")
     @Mapping(target = "content", source = "content", defaultExpression = "java(java.util.List.of())")
     OffrePageResponse toPageResponse(Page<OffreResponse> page);

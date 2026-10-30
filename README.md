@@ -241,3 +241,15 @@ GET `/api/offres/{id}`, sans corps : 200 avec toutes les informations de l’off
 Le détail utilise OffreDetailResponse, distinct des réponses de création/modification/recherche. Les entités JPA ne sont pas exposées et CampaignResponse ne référence pas l’offre parente. MapStruct génère les conversions dans une transaction en lecture seule. Aucune nouvelle migration n’est nécessaire.
 
 Test automatique avec PostgreSQL : `.\mvnw.cmd test '-Dtest=OfferDetailsIT'`. La création de campagnes par HTTP reste prévue dans US5.
+
+## Création d’une campagne — US5 (recette manuelle attendue)
+
+État du rendu au 30 octobre 2026 : le dernier endpoint `POST /api/offres/{id}/campaigns` est implémenté et couvert par des tests automatiques, mais n’a pas été testé manuellement dans Apidog. Sa recette manuelle reste à effectuer. Les US1 à US4 ont été validées manuellement. Le brief reste partiellement réalisé : les transitions de statut, la liste des campagnes actives, le traitement de ProfileSuspended, les notifications et OfferApi restent à terminer.
+
+POST `/api/offres/{id}/campaigns` avec advertiserId, name, startDate, endDate, budget, payoutModel et payoutValue. advertiserId doit désigner le propriétaire actif de l’offre ; ce contrat pédagogique ne fournit pas encore d’authentification de l’appelant.
+
+La campagne est créée en DRAFT. endDate doit être strictement après startDate ; budget > 0 ; CPC/CPL/CPA_FIXED exigent payoutValue > 0 ; CPA_PERCENT accepte 0 à 100 inclus. Les montants acceptent au maximum 15 chiffres entiers et 4 décimales, conformément au schéma NUMERIC(19,4).
+
+Réponses : 201 avec CampaignResponse ; 400 saisie invalide ; 404 offre ou annonceur absent ; 409 annonceur inactif ou offre d’un autre propriétaire. La campagne créée est ensuite visible avec GET /api/offres/{id}.
+
+Test automatique : `.\mvnw.cmd test '-Dtest=CampaignCreationIT'`, PostgreSQL actif. Activation, pause et fin ne sont pas encore implémentées à cette étape.
