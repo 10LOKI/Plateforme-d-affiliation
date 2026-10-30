@@ -1,8 +1,8 @@
 package com.affiliatelink.profile;
 
 import com.affiliatelink.common.InvalidProfileStatusException;
-import com.affiliatelink.profile.entity.ProfileStatus;
-import com.affiliatelink.profile.entity.Publisher;
+import com.affiliatelink.profile.internal.entity.ProfileStatus;
+import com.affiliatelink.profile.internal.entity.Publisher;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
